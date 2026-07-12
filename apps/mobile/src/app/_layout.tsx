@@ -55,6 +55,9 @@ export default function RootLayout() {
         <Stack.Protected guard={!isAuthenticated}>
           <Stack.Screen name="(auth)" />
         </Stack.Protected>
+
+        {/* Dev-only component gallery — reachable from any auth state. */}
+        <Stack.Screen name="dev-components" />
       </Stack>
     </AppProviders>
   );

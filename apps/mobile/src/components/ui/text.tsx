@@ -1,6 +1,15 @@
 import { Text as RNText, type TextProps } from 'react-native';
 
-type Variant = 'hero' | 'title1' | 'title2' | 'title3' | 'subhead' | 'body' | 'footnote' | 'caption';
+type Variant =
+  | 'hero'
+  | 'title1'
+  | 'title2'
+  | 'title3'
+  | 'subhead'
+  | 'callout'
+  | 'body'
+  | 'footnote'
+  | 'caption';
 
 const variantClasses: Record<Variant, string> = {
   hero: 'font-bold text-[30px] leading-[38px] text-ink',
@@ -8,6 +17,7 @@ const variantClasses: Record<Variant, string> = {
   title2: 'font-bold text-[22px] leading-[30px] text-ink',
   title3: 'font-semibold text-[18px] leading-[26px] text-ink',
   subhead: 'font-semibold text-[16px] leading-[24px] text-ink',
+  callout: 'font-medium text-[15px] leading-[22px] text-ink',
   body: 'font-sans text-[14px] leading-[22px] text-ink',
   footnote: 'font-sans text-[12px] leading-[18px] text-muted',
   caption: 'font-medium text-[11px] leading-[16px] text-faint',

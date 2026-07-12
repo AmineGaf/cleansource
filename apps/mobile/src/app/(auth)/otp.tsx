@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
-import { AppText, Button, Input, Screen } from '@/components/ui';
+import { AppText, Button, OtpInput, Screen } from '@/components/ui';
 import { authApi } from '@/features/auth/api';
 import { useAuthStore } from '@/features/auth/store';
 
@@ -56,15 +56,14 @@ export default function OtpScreen() {
         </AppText>
       </View>
 
-      <Input
-        keyboardType="number-pad"
-        maxLength={4}
-        value={code}
-        onChangeText={handleChange}
-        error={error}
-        className="text-center text-[24px] tracking-[12px]"
-        autoFocus
-      />
+      <View className="gap-2">
+        <OtpInput value={code} onChange={handleChange} error={!!error} />
+        {error ? (
+          <AppText variant="caption" className="text-center text-danger">
+            {error}
+          </AppText>
+        ) : null}
+      </View>
 
       <Button
         label={t('common.confirm')}
