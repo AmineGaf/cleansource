@@ -8,7 +8,8 @@ services:
       POSTGRES_PASSWORD: cleansource
       POSTGRES_DB: cleansource
     ports:
-      - "5432:5432"
+      # Host port 5433 to avoid clashing with any locally installed Postgres.
+      - "5433:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
