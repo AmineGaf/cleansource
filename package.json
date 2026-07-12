@@ -6,6 +6,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "postinstall": "pnpm --filter \"./packages/*\" run build",
     "dev": "turbo run dev",
     "dev:mobile": "pnpm --filter @cleansource/mobile start",
     "dev:api": "pnpm --filter @cleansource/api start:dev",
