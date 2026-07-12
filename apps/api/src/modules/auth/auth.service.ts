@@ -3,7 +3,7 @@ import { createHash, randomInt } from 'node:crypto';
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
-import type { AuthResponse } from '@cleansource/contracts';
+import type { AuthResponse, AuthUser, TokenPair } from '@cleansource/contracts';
 
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -84,5 +84,46 @@ export class AuthService {
         language: user.language,
       },
     };
+  }
+
+  /** Restores the session on app launch. */
+  async me(userId: string): Promise<AuthUser> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException('Account no longer exists');
+    return {
+      id: user.id,
+      phone: user.phone,
+      fullName: user.fullName,
+      email: user.email,
+      language: user.language,
+    };
+  }
+
+  /** Exchanges a valid refresh token for a fresh token pair. */
+  async refresh(refreshToken: string): Promise<TokenPair> {
+    let payload: { sub: string; phone: string };
+    try {
+      payload = await this.jwtService.verifyAsync<{
+        sub: string;
+        phone: string;
+      }>(refreshToken);
+    } catch {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+    });
+    if (!user) throw new UnauthorizedException('Account no longer exists');
+
+    const fresh = { sub: user.id, phone: user.phone };
+    const [accessToken, newRefreshToken] = await Promise.all([
+      this.jwtService.signAsync(fresh),
+      this.jwtService.signAsync(fresh, {
+        expiresIn: (this.config.get<string>('REFRESH_EXPIRES_IN') ??
+          '30d') as JwtSignOptions['expiresIn'],
+      }),
+    ]);
+    return { accessToken, refreshToken: newRefreshToken };
   }
 }
