@@ -1,11 +1,25 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  refreshTokenSchema,
   requestOtpSchema,
   verifyOtpSchema,
+  type RefreshTokenDto,
   type RequestOtpDto,
   type VerifyOtpDto,
 } from '@cleansource/contracts';
 
+import {
+  CurrentUser,
+  type JwtPayload,
+} from '../../common/current-user.decorator';
+import { JwtAuthGuard } from '../../common/jwt-auth.guard';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import { AuthService } from './auth.service';
 
@@ -25,5 +39,19 @@ export class AuthController {
   @HttpCode(200)
   verifyOtp(@Body(new ZodValidationPipe(verifyOtpSchema)) dto: VerifyOtpDto) {
     return this.authService.verifyOtp(dto.phone, dto.code);
+  }
+
+  @Post('refresh')
+  @HttpCode(200)
+  refresh(
+    @Body(new ZodValidationPipe(refreshTokenSchema)) dto: RefreshTokenDto,
+  ) {
+    return this.authService.refresh(dto.refreshToken);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  me(@CurrentUser() user: JwtPayload) {
+    return this.authService.me(user.sub);
   }
 }

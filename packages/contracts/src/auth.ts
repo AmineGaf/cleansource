@@ -34,3 +34,19 @@ export const authResponseSchema = z.object({
   isNewUser: z.boolean(),
 });
 export type AuthResponse = z.infer<typeof authResponseSchema>;
+
+export const refreshTokenSchema = z.object({
+  refreshToken: z.string().min(10),
+});
+export type RefreshTokenDto = z.infer<typeof refreshTokenSchema>;
+
+export const tokenPairSchema = z.object({
+  accessToken: z.string(),
+  refreshToken: z.string(),
+});
+export type TokenPair = z.infer<typeof tokenPairSchema>;
+
+export const otpRequestedSchema = z.object({
+  sent: z.boolean(),
+});
+export type OtpRequested = z.infer<typeof otpRequestedSchema>;

@@ -7,7 +7,7 @@ import { secureStorage, StorageKeys } from './storage';
  * zod schema from @cleansource/contracts, so the server can never silently
  * hand the app a shape it doesn't expect.
  */
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
+const BASE_URL = `${process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000'}/api/v1`;
 
 export class ApiError extends Error {
   constructor(

@@ -1,10 +1,12 @@
 import { saudiPhoneSchema } from '@cleansource/contracts';
+import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { AppText, Button, Input, Screen } from '@/components/ui';
+import { authApi } from '@/features/auth/api';
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -12,15 +14,22 @@ export default function LoginScreen() {
   const [phone, setPhone] = useState('');
   const [error, setError] = useState<string>();
 
+  const requestOtp = useMutation({
+    mutationFn: authApi.requestOtp,
+    onSuccess: (_, normalizedPhone) => {
+      router.push({ pathname: '/(auth)/otp', params: { phone: normalizedPhone } });
+    },
+    onError: () => setError(t('auth.genericError')),
+  });
+
   const handleSubmit = () => {
     const result = saudiPhoneSchema.safeParse(phone);
     if (!result.success) {
-      setError(result.error.issues[0]?.message);
+      setError(t('auth.invalidPhone'));
       return;
     }
     setError(undefined);
-    // TODO: request OTP via the API, then:
-    router.push({ pathname: '/(auth)/otp', params: { phone: result.data } });
+    requestOtp.mutate(result.data);
   };
 
   return (
@@ -39,9 +48,10 @@ export default function LoginScreen() {
         onChangeText={setPhone}
         error={error}
         autoFocus
+        onSubmitEditing={handleSubmit}
       />
 
-      <Button label={t('auth.sendCode')} onPress={handleSubmit} />
+      <Button label={t('auth.sendCode')} onPress={handleSubmit} loading={requestOtp.isPending} />
     </Screen>
   );
 }

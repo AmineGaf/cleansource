@@ -7,9 +7,10 @@ import {
 } from '@expo-google-fonts/ibm-plex-sans-arabic';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 
+import { useAuthStore } from '@/features/auth/store';
 import { AppProviders } from '@/providers/app-providers';
 
 import '../../global.css';
@@ -23,20 +24,37 @@ export default function RootLayout() {
     IBMPlexSansArabic_600SemiBold,
     IBMPlexSansArabic_700Bold,
   });
+  const status = useAuthStore((state) => state.status);
+  const hydrate = useAuthStore((state) => state.hydrate);
 
   useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
-  }, [fontsLoaded]);
+    void hydrate();
+  }, [hydrate]);
 
-  if (!fontsLoaded) return null;
+  const ready = fontsLoaded && status !== 'loading';
+
+  useEffect(() => {
+    if (ready) SplashScreen.hideAsync();
+  }, [ready]);
+
+  // Keep the native splash visible while fonts load & the session hydrates.
+  if (!ready) return null;
+
+  const isAuthenticated = status === 'authenticated';
 
   return (
     <AppProviders>
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#f4f6f9' } }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="order/new" options={{ presentation: 'modal' }} />
+        <Stack.Protected guard={isAuthenticated}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="complete-profile" />
+          <Stack.Screen name="order/new" options={{ presentation: 'modal' }} />
+        </Stack.Protected>
+
+        <Stack.Protected guard={!isAuthenticated}>
+          <Stack.Screen name="(auth)" />
+        </Stack.Protected>
       </Stack>
     </AppProviders>
   );
