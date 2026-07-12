@@ -1,0 +1,64 @@
+{
+  "common": {
+    "appName": "كلين سورس",
+    "continue": "متابعة",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "back": "رجوع",
+    "sar": "ر.س",
+    "loading": "جارٍ التحميل…"
+  },
+  "tabs": {
+    "home": "الرئيسية",
+    "orders": "الطلبات",
+    "offers": "العروض",
+    "account": "حسابي"
+  },
+  "auth": {
+    "welcomeTitle": "غسيلك من باب بيتك",
+    "welcomeSubtitle": "نستلم غسيلك، نغسله ونكويه بعناية، ونعيده إليك خلال 24 ساعة",
+    "getStarted": "ابدأ الآن",
+    "phoneTitle": "أهلاً بك في كلين سورس",
+    "phoneSubtitle": "أدخل رقم جوالك لتسجيل الدخول أو إنشاء حساب",
+    "phonePlaceholder": "5X XXX XXXX",
+    "sendCode": "إرسال رمز التحقق",
+    "otpTitle": "أدخل رمز التحقق",
+    "otpSubtitle": "أرسلنا رمزاً مكوناً من 4 أرقام إلى {{phone}}",
+    "resendIn": "إعادة الإرسال خلال {{seconds}} ثانية"
+  },
+  "home": {
+    "greeting": "مرحباً، {{name}}",
+    "searchPlaceholder": "ابحث عن خدمة...",
+    "promoTitle": "خصم 20% على طلبك الأول",
+    "promoSubtitle": "استخدم الرمز CLEAN20 عند الدفع",
+    "newOrder": "طلب جديد",
+    "ourServices": "خدماتنا",
+    "priceList": "قائمة الأسعار",
+    "orderAgain": "أعد طلبك الأخير",
+    "reorder": "اطلب مجدداً"
+  },
+  "order": {
+    "howToOrder": "كيف تود الطلب؟",
+    "howToOrderSubtitle": "اختر الطريقة الأنسب لك",
+    "byWeight": "غسيل بالوزن",
+    "byWeightDescription": "أرسل كيس الغسيل ويُحسب السعر بالكيلو — أسهل وأوفر",
+    "byItem": "غسيل بالقطعة",
+    "byItemDescription": "اختر كل قطعة بنفسك مع سعر واضح لكل نوع",
+    "choosePackage": "اختر باقتك",
+    "kg": "كجم",
+    "perMonth": "شهرياً"
+  },
+  "services": {
+    "washAndFold": "غسيل وكي",
+    "dryClean": "تنظيف جاف",
+    "ironing": "كي الملابس"
+  },
+  "status": {
+    "PLACED": "تم استلام الطلب",
+    "PICKED_UP": "تم استلام الغسيل",
+    "IN_PROGRESS": "قيد المعالجة",
+    "OUT_FOR_DELIVERY": "في الطريق إليك",
+    "DELIVERED": "تم التوصيل",
+    "CANCELLED": "ملغي"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "common": {
+    "appName": "CleanSource",
+    "continue": "Continue",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "back": "Back",
+    "sar": "SAR",
+    "loading": "Loading…"
+  },
+  "tabs": {
+    "home": "Home",
+    "orders": "Orders",
+    "offers": "Offers",
+    "account": "Account"
+  },
+  "auth": {
+    "welcomeTitle": "Laundry from your doorstep",
+    "welcomeSubtitle": "We pick up, wash & iron with care, and return it within 24 hours",
+    "getStarted": "Get started",
+    "phoneTitle": "Welcome to CleanSource",
+    "phoneSubtitle": "Enter your phone to sign in or create an account",
+    "phonePlaceholder": "5X XXX XXXX",
+    "sendCode": "Send verification code",
+    "otpTitle": "Enter verification code",
+    "otpSubtitle": "We sent a 4-digit code to {{phone}}",
+    "resendIn": "Resend in {{seconds}}s"
+  },
+  "home": {
+    "greeting": "Hi, {{name}}",
+    "searchPlaceholder": "Search for a service...",
+    "promoTitle": "20% off your first order",
+    "promoSubtitle": "Use code CLEAN20 at checkout",
+    "newOrder": "New order",
+    "ourServices": "Our services",
+    "priceList": "Price list",
+    "orderAgain": "Order again",
+    "reorder": "Reorder"
+  },
+  "order": {
+    "howToOrder": "How would you like to order?",
+    "howToOrderSubtitle": "Pick what suits you best",
+    "byWeight": "Laundry by Weight",
+    "byWeightDescription": "Send a laundry bag, priced per KG — easier & cheaper",
+    "byItem": "Laundry by Item",
+    "byItemDescription": "Pick each piece yourself with clear per-item pricing",
+    "choosePackage": "Choose your package",
+    "kg": "kg",
+    "perMonth": "per month"
+  },
+  "services": {
+    "washAndFold": "Wash & Fold",
+    "dryClean": "Dry Clean",
+    "ironing": "Ironing"
+  },
+  "status": {
+    "PLACED": "Order placed",
+    "PICKED_UP": "Laundry picked up",
+    "IN_PROGRESS": "In progress",
+    "OUT_FOR_DELIVERY": "Out for delivery",
+    "DELIVERED": "Delivered",
+    "CANCELLED": "Cancelled"
+  }
+}
