@@ -1,0 +1,24 @@
+{
+  "name": "cleansource",
+  "private": true,
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:mobile": "pnpm --filter @cleansource/mobile start",
+    "dev:api": "pnpm --filter @cleansource/api start:dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "db:migrate": "pnpm --filter @cleansource/api prisma:migrate",
+    "db:studio": "pnpm --filter @cleansource/api prisma:studio"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "turbo": "^2.5.0"
+  }
+}

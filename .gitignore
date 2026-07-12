@@ -1,0 +1,29 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+build/
+.expo/
+.turbo/
+*.tsbuildinfo
+expo-env.d.ts
+
+# native (managed by Expo prebuild — commit only if we eject)
+apps/mobile/ios/
+apps/mobile/android/
+
+# env & secrets
+.env
+.env.*
+!.env.example
+
+# databases
+*.sqlite
+postgres-data/
+
+# logs & misc
+*.log
+.DS_Store
+coverage/
