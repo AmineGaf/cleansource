@@ -13,8 +13,23 @@ export const createAddressSchema = z.object({
 });
 export type CreateAddressDto = z.infer<typeof createAddressSchema>;
 
-export const addressSchema = createAddressSchema.extend({
+export const updateAddressSchema = createAddressSchema.partial();
+export type UpdateAddressDto = z.infer<typeof updateAddressSchema>;
+
+/** Address as returned by the API (nullable fields come back as null, not undefined). */
+export const addressSchema = z.object({
   id: z.string(),
   userId: z.string(),
+  label: z.nativeEnum(AddressLabel),
+  street: z.string(),
+  building: z.string().nullable(),
+  apartment: z.string().nullable(),
+  driverNotes: z.string().nullable(),
+  latitude: z.number().nullable(),
+  longitude: z.number().nullable(),
+  isDefault: z.boolean(),
+  createdAt: z.string().datetime(),
 });
 export type Address = z.infer<typeof addressSchema>;
+
+export const addressListSchema = z.array(addressSchema);

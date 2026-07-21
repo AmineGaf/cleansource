@@ -1,6 +1,7 @@
 import type { AuthUser } from '@cleansource/contracts';
 import { create } from 'zustand';
 
+import { ApiError, setOnSessionExpired } from '@/lib/api';
 import { secureStorage, StorageKeys } from '@/lib/storage';
 
 import { authApi } from './api';
@@ -11,8 +12,8 @@ interface AuthState {
   /** Restore the session from secure storage on app launch. */
   hydrate: () => Promise<void>;
   signIn: (user: AuthUser, tokens: { accessToken: string; refreshToken: string }) => Promise<void>;
-  setUser: (user: AuthUser) => void;
   signOut: () => Promise<void>;
+  setUser: (user: AuthUser) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -20,19 +21,24 @@ export const useAuthStore = create<AuthState>((set) => ({
   status: 'loading',
 
   hydrate: async () => {
+    const token = await secureStorage.get(StorageKeys.accessToken);
+    if (!token) {
+      set({ status: 'guest' });
+      return;
+    }
     try {
-      const token = await secureStorage.get(StorageKeys.accessToken);
-      if (!token) {
-        set({ status: 'guest' });
-        return;
-      }
       const user = await authApi.me();
       set({ user, status: 'authenticated' });
-    } catch {
-      // Expired/invalid token (or API unreachable) — fall back to guest.
-      await secureStorage.remove(StorageKeys.accessToken);
-      await secureStorage.remove(StorageKeys.refreshToken);
-      set({ user: null, status: 'guest' });
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        // Expired/invalid token — clear the session.
+        await secureStorage.remove(StorageKeys.accessToken);
+        await secureStorage.remove(StorageKeys.refreshToken);
+        set({ user: null, status: 'guest' });
+      } else {
+        // Offline or server down — keep the session; data loads when back online.
+        set({ status: 'authenticated' });
+      }
     }
   },
 
@@ -42,11 +48,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user, status: 'authenticated' });
   },
 
-  setUser: (user) => set({ user }),
-
   signOut: async () => {
     await secureStorage.remove(StorageKeys.accessToken);
     await secureStorage.remove(StorageKeys.refreshToken);
     set({ user: null, status: 'guest' });
   },
+
+  setUser: (user) => set({ user }),
 }));
+
+// When a token refresh fails mid-session, drop straight to the auth flow.
+setOnSessionExpired(() => {
+  void useAuthStore.getState().signOut();
+});

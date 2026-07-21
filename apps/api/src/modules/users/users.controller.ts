@@ -1,7 +1,9 @@
-import { Body, Controller, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import {
-  completeProfileSchema,
-  type CompleteProfileDto,
+  registerPushTokenSchema,
+  updateProfileSchema,
+  type RegisterPushTokenDto,
+  type UpdateProfileDto,
 } from '@cleansource/contracts';
 
 import {
@@ -17,11 +19,25 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Get('me')
+  getMe(@CurrentUser() user: JwtPayload) {
+    return this.usersService.getMe(user.sub);
+  }
+
   @Patch('me')
   updateProfile(
     @CurrentUser() user: JwtPayload,
-    @Body(new ZodValidationPipe(completeProfileSchema)) dto: CompleteProfileDto,
+    @Body(new ZodValidationPipe(updateProfileSchema)) dto: UpdateProfileDto,
   ) {
     return this.usersService.updateProfile(user.sub, dto);
+  }
+
+  @Post('me/push-token')
+  registerPushToken(
+    @CurrentUser() user: JwtPayload,
+    @Body(new ZodValidationPipe(registerPushTokenSchema))
+    dto: RegisterPushTokenDto,
+  ) {
+    return this.usersService.registerPushToken(user.sub, dto);
   }
 }

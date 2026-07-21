@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
 import type { AuthResponse, AuthUser, TokenPair } from '@cleansource/contracts';
 
+import type { JwtPayload } from '../../common/current-user.decorator';
 import { PrismaService } from '../../prisma/prisma.service';
 
 const OTP_TTL_MS = 5 * 60 * 1000;
@@ -63,18 +64,10 @@ export class AuthService {
         data: { phone, wallet: { create: {} } },
       }));
 
-    const payload = { sub: user.id, phone: user.phone };
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(payload),
-      this.jwtService.signAsync(payload, {
-        expiresIn: (this.config.get<string>('REFRESH_EXPIRES_IN') ??
-          '30d') as JwtSignOptions['expiresIn'],
-      }),
-    ]);
+    const tokens = await this.issueTokens(user.id, user.phone);
 
     return {
-      accessToken,
-      refreshToken,
+      ...tokens,
       isNewUser: !existing,
       user: {
         id: user.id,
@@ -99,16 +92,20 @@ export class AuthService {
     };
   }
 
-  /** Exchanges a valid refresh token for a fresh token pair. */
+  /**
+   * Exchanges a valid refresh token for a fresh access/refresh pair.
+   * Refresh tokens carry `typ: 'refresh'` so they can never be used as
+   * access tokens (the auth guard rejects them).
+   */
   async refresh(refreshToken: string): Promise<TokenPair> {
-    let payload: { sub: string; phone: string };
+    let payload: JwtPayload;
     try {
-      payload = await this.jwtService.verifyAsync<{
-        sub: string;
-        phone: string;
-      }>(refreshToken);
+      payload = await this.jwtService.verifyAsync<JwtPayload>(refreshToken);
     } catch {
       throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+    if (payload.typ !== 'refresh') {
+      throw new UnauthorizedException('Not a refresh token');
     }
 
     const user = await this.prisma.user.findUnique({
@@ -116,14 +113,20 @@ export class AuthService {
     });
     if (!user) throw new UnauthorizedException('Account no longer exists');
 
-    const fresh = { sub: user.id, phone: user.phone };
-    const [accessToken, newRefreshToken] = await Promise.all([
-      this.jwtService.signAsync(fresh),
-      this.jwtService.signAsync(fresh, {
-        expiresIn: (this.config.get<string>('REFRESH_EXPIRES_IN') ??
-          '30d') as JwtSignOptions['expiresIn'],
-      }),
+    return this.issueTokens(user.id, user.phone);
+  }
+
+  private async issueTokens(userId: string, phone: string): Promise<TokenPair> {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync({ sub: userId, phone }),
+      this.jwtService.signAsync(
+        { sub: userId, phone, typ: 'refresh' },
+        {
+          expiresIn: (this.config.get<string>('REFRESH_EXPIRES_IN') ??
+            '30d') as JwtSignOptions['expiresIn'],
+        },
+      ),
     ]);
-    return { accessToken, refreshToken: newRefreshToken };
+    return { accessToken, refreshToken };
   }
 }

@@ -50,6 +50,13 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="complete-profile" />
           <Stack.Screen name="order/new" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="order/[id]" />
+          <Stack.Screen name="account/profile" />
+          <Stack.Screen name="account/addresses/index" />
+          <Stack.Screen name="account/addresses/form" />
+          <Stack.Screen name="account/wallet" />
+          <Stack.Screen name="account/notifications" />
+          <Stack.Screen name="account/support" />
         </Stack.Protected>
 
         <Stack.Protected guard={!isAuthenticated}>

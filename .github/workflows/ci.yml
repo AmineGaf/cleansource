@@ -27,17 +27,20 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Install (builds shared packages via postinstall)
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Prisma generate
         run: pnpm --filter @cleansource/api prisma:generate
 
-      - name: Typecheck
-        run: pnpm typecheck
+      - name: Build
+        run: pnpm build
 
       - name: Lint
         run: pnpm lint
 
-      - name: Build API
-        run: pnpm --filter @cleansource/api build
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm --filter @cleansource/api test
