@@ -33,6 +33,7 @@
     "@cleansource/contracts": "workspace:*",
     "@nestjs/config": "^4.0.0",
     "@nestjs/jwt": "^11.0.0",
+    "@nestjs/throttler": "^6.4.0",
     "@prisma/client": "^6.2.0",
     "zod": "^3.24.1"
   },

@@ -1,5 +1,20 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { createOrderSchema, type CreateOrderDto } from '@cleansource/contracts';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  cancelOrderSchema,
+  createOrderSchema,
+  rateOrderSchema,
+  type CancelOrderDto,
+  type CreateOrderDto,
+  type RateOrderDto,
+} from '@cleansource/contracts';
 
 import {
   CurrentUser,
@@ -30,5 +45,24 @@ export class OrdersController {
   @Get(':id')
   getOne(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
     return this.ordersService.getForUser(user.sub, id);
+  }
+
+  @Post(':id/cancel')
+  @HttpCode(200)
+  cancel(
+    @CurrentUser() user: JwtPayload,
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(cancelOrderSchema)) dto: CancelOrderDto,
+  ) {
+    return this.ordersService.cancel(user.sub, id, dto);
+  }
+
+  @Post(':id/rating')
+  rate(
+    @CurrentUser() user: JwtPayload,
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(rateOrderSchema)) dto: RateOrderDto,
+  ) {
+    return this.ordersService.rate(user.sub, id, dto);
   }
 }

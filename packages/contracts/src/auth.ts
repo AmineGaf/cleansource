@@ -34,3 +34,20 @@ export const authResponseSchema = z.object({
   isNewUser: z.boolean(),
 });
 export type AuthResponse = z.infer<typeof authResponseSchema>;
+
+export const requestOtpResponseSchema = z.object({
+  sent: z.boolean(),
+});
+export type RequestOtpResponse = z.infer<typeof requestOtpResponseSchema>;
+
+export const refreshTokenSchema = z.object({
+  refreshToken: z.string().min(1),
+});
+export type RefreshTokenDto = z.infer<typeof refreshTokenSchema>;
+
+/** Returned by POST /auth/refresh — a rotated access/refresh pair. */
+export const tokenPairSchema = z.object({
+  accessToken: z.string(),
+  refreshToken: z.string(),
+});
+export type TokenPair = z.infer<typeof tokenPairSchema>;
