@@ -20,14 +20,9 @@ export function AppProviders({ children }: PropsWithChildren) {
       }),
   );
 
+  // Session hydration happens in the root layout; here we only (re-)register
+  // the device push token whenever a session becomes active.
   const status = useAuthStore((state) => state.status);
-
-  // Restore the session from SecureStore once on launch.
-  useEffect(() => {
-    void useAuthStore.getState().bootstrap();
-  }, []);
-
-  // (Re-)register the device push token whenever a session becomes active.
   useEffect(() => {
     if (status === 'authenticated') void registerPushToken();
   }, [status]);

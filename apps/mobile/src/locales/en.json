@@ -30,7 +30,16 @@
     "otpTitle": "Enter verification code",
     "otpSubtitle": "We sent a 4-digit code to {{phone}}",
     "resendIn": "Resend in {{seconds}}s",
-    "resend": "Resend code"
+    "resend": "Resend code",
+    "invalidPhone": "Enter a valid Saudi mobile number",
+    "invalidCode": "Invalid or expired code",
+    "invalidProfile": "Enter your full name (and a valid email if provided)",
+    "genericError": "Something went wrong, please try again",
+    "profileTitle": "Complete your profile",
+    "profileSubtitle": "One quick step and you're set",
+    "fullName": "Full name",
+    "emailOptional": "Email (optional)",
+    "signOut": "Sign out"
   },
   "home": {
     "greeting": "Hi, {{name}}",
@@ -106,7 +115,11 @@
     "add": "Add address",
     "addTitle": "New address",
     "editTitle": "Edit address",
-    "labels": { "HOME": "Home", "WORK": "Work", "OTHER": "Other" },
+    "labels": {
+      "HOME": "Home",
+      "WORK": "Work",
+      "OTHER": "Other"
+    },
     "default": "Default",
     "street": "Street & district",
     "building": "Building",

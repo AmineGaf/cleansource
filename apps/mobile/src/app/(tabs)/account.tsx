@@ -36,9 +36,16 @@ export default function AccountScreen() {
         {t('tabs.account')}
       </AppText>
 
-      <Card className="gap-1">
-        <AppText variant="title3">{user?.fullName ?? t('account.guest')}</AppText>
-        <AppText variant="footnote">{user?.phone ?? ''}</AppText>
+      <Card className="flex-row items-center gap-4">
+        <View className="h-14 w-14 items-center justify-center rounded-full bg-primary-soft">
+          <AppText variant="title3" className="text-navy">
+            {user?.fullName?.charAt(0) ?? '·'}
+          </AppText>
+        </View>
+        <View className="flex-1">
+          <AppText variant="subhead">{user?.fullName ?? t('account.guest')}</AppText>
+          <AppText variant="footnote">{user?.phone ?? ''}</AppText>
+        </View>
       </Card>
 
       <View className="gap-3">

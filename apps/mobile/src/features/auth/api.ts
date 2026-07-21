@@ -1,29 +1,32 @@
 import {
   authResponseSchema,
-  requestOtpResponseSchema,
+  authUserSchema,
+  otpRequestedSchema,
+  type AuthResponse,
+  type AuthUser,
+  type CompleteProfileDto,
+  type OtpRequested,
 } from '@cleansource/contracts';
-import { useMutation } from '@tanstack/react-query';
 
 import { apiRequest } from '@/lib/api';
 
-export function useRequestOtp() {
-  return useMutation({
-    mutationFn: (phone: string) =>
-      apiRequest('/auth/otp/request', requestOtpResponseSchema, {
-        method: 'POST',
-        body: { phone },
-        auth: false,
-      }),
-  });
-}
+export const authApi = {
+  requestOtp: (phone: string): Promise<OtpRequested> =>
+    apiRequest('/auth/otp/request', otpRequestedSchema, {
+      method: 'POST',
+      body: { phone },
+      auth: false,
+    }),
 
-export function useVerifyOtp() {
-  return useMutation({
-    mutationFn: (input: { phone: string; code: string }) =>
-      apiRequest('/auth/otp/verify', authResponseSchema, {
-        method: 'POST',
-        body: input,
-        auth: false,
-      }),
-  });
-}
+  verifyOtp: (phone: string, code: string): Promise<AuthResponse> =>
+    apiRequest('/auth/otp/verify', authResponseSchema, {
+      method: 'POST',
+      body: { phone, code },
+      auth: false,
+    }),
+
+  me: (): Promise<AuthUser> => apiRequest('/auth/me', authUserSchema),
+
+  completeProfile: (dto: CompleteProfileDto): Promise<AuthUser> =>
+    apiRequest('/users/me', authUserSchema, { method: 'PATCH', body: dto }),
+};

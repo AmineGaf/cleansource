@@ -1,11 +1,16 @@
 import { Link } from 'expo-router';
+import { Shirt, WashingMachine, Wind } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { AppText, Button, Card, PressableCard, Screen } from '@/components/ui';
+import { AppText, Button, Card, IconTile, PressableCard, Screen } from '@/components/ui';
 import { useAuthStore } from '@/features/auth/store';
 
-const SERVICES = ['washAndFold', 'dryClean', 'ironing'] as const;
+const SERVICES = [
+  { key: 'washAndFold', icon: WashingMachine },
+  { key: 'dryClean', icon: Wind },
+  { key: 'ironing', icon: Shirt },
+] as const;
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -41,10 +46,10 @@ export default function HomeScreen() {
 
       <View className="flex-row gap-3">
         {SERVICES.map((service) => (
-          <PressableCard key={service} className="flex-1 items-center gap-2 py-5">
-            <View className="h-12 w-12 rounded-md bg-primary-soft" />
+          <PressableCard key={service.key} className="flex-1 items-center gap-2 py-5">
+            <IconTile icon={service.icon} />
             <AppText variant="footnote" className="text-ink">
-              {t(`services.${service}`)}
+              {t(`services.${service.key}`)}
             </AppText>
           </PressableCard>
         ))}

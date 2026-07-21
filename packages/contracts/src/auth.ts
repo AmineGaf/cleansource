@@ -35,13 +35,13 @@ export const authResponseSchema = z.object({
 });
 export type AuthResponse = z.infer<typeof authResponseSchema>;
 
-export const requestOtpResponseSchema = z.object({
+export const otpRequestedSchema = z.object({
   sent: z.boolean(),
 });
-export type RequestOtpResponse = z.infer<typeof requestOtpResponseSchema>;
+export type OtpRequested = z.infer<typeof otpRequestedSchema>;
 
 export const refreshTokenSchema = z.object({
-  refreshToken: z.string().min(1),
+  refreshToken: z.string().min(10),
 });
 export type RefreshTokenDto = z.infer<typeof refreshTokenSchema>;
 

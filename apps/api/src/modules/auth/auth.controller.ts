@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import {
   refreshTokenSchema,
@@ -9,6 +16,11 @@ import {
   type VerifyOtpDto,
 } from '@cleansource/contracts';
 
+import {
+  CurrentUser,
+  type JwtPayload,
+} from '../../common/current-user.decorator';
+import { JwtAuthGuard } from '../../common/jwt-auth.guard';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import { AuthService } from './auth.service';
 
@@ -39,5 +51,11 @@ export class AuthController {
     @Body(new ZodValidationPipe(refreshTokenSchema)) dto: RefreshTokenDto,
   ) {
     return this.authService.refresh(dto.refreshToken);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  me(@CurrentUser() user: JwtPayload) {
+    return this.authService.me(user.sub);
   }
 }

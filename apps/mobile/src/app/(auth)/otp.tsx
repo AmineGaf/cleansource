@@ -1,12 +1,12 @@
+import { useMutation } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
-import { AppText, Button, Input, Screen } from '@/components/ui';
-import { useRequestOtp, useVerifyOtp } from '@/features/auth/api';
+import { AppText, Button, OtpInput, Screen } from '@/components/ui';
+import { authApi } from '@/features/auth/api';
 import { useAuthStore } from '@/features/auth/store';
-import { ApiError } from '@/lib/api';
 
 const RESEND_SECONDS = 30;
 
@@ -20,34 +20,31 @@ export default function OtpScreen() {
   const [error, setError] = useState<string>();
   const [secondsLeft, setSecondsLeft] = useState(RESEND_SECONDS);
 
-  const verifyOtp = useVerifyOtp();
-  const resendOtp = useRequestOtp();
-
   useEffect(() => {
     if (secondsLeft <= 0) return;
     const timer = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
     return () => clearTimeout(timer);
   }, [secondsLeft]);
 
-  const handleVerify = () => {
-    if (!phone || code.length !== 4) return;
-    setError(undefined);
-    verifyOtp.mutate(
-      { phone, code },
-      {
-        onSuccess: async (auth) => {
-          await signIn(auth.user, auth);
-          router.replace('/(tabs)');
-        },
-        onError: (err) =>
-          setError(err instanceof ApiError ? err.message : t('errors.network')),
-      },
-    );
-  };
+  const verify = useMutation({
+    mutationFn: (otpCode: string) => authApi.verifyOtp(phone!, otpCode),
+    onSuccess: async (response) => {
+      await signIn(response.user, response);
+      // Protected routes flip automatically; new users finish their profile first.
+      router.replace(response.isNewUser ? '/complete-profile' : '/(tabs)');
+    },
+    onError: () => setError(t('auth.invalidCode')),
+  });
 
-  const handleResend = () => {
-    if (!phone || secondsLeft > 0) return;
-    resendOtp.mutate(phone, { onSuccess: () => setSecondsLeft(RESEND_SECONDS) });
+  const resend = useMutation({
+    mutationFn: () => authApi.requestOtp(phone!),
+    onSuccess: () => setSecondsLeft(RESEND_SECONDS),
+  });
+
+  const handleChange = (value: string) => {
+    setCode(value);
+    setError(undefined);
+    if (value.length === 4 && !verify.isPending) verify.mutate(value);
   };
 
   return (
@@ -59,30 +56,33 @@ export default function OtpScreen() {
         </AppText>
       </View>
 
-      <Input
-        keyboardType="number-pad"
-        maxLength={4}
-        className="text-center text-[24px]"
-        value={code}
-        onChangeText={setCode}
-        error={error}
-        autoFocus
-      />
+      <View className="gap-2">
+        <OtpInput value={code} onChange={handleChange} error={!!error} />
+        {error ? (
+          <AppText variant="caption" className="text-center text-danger">
+            {error}
+          </AppText>
+        ) : null}
+      </View>
 
       <Button
         label={t('common.confirm')}
-        onPress={handleVerify}
-        loading={verifyOtp.isPending}
+        onPress={() => verify.mutate(code)}
+        loading={verify.isPending}
         disabled={code.length !== 4}
       />
 
-      <Pressable onPress={handleResend} disabled={secondsLeft > 0}>
+      {secondsLeft > 0 ? (
         <AppText variant="footnote" className="text-center">
-          {secondsLeft > 0
-            ? t('auth.resendIn', { seconds: secondsLeft })
-            : t('auth.resend')}
+          {t('auth.resendIn', { seconds: secondsLeft })}
         </AppText>
-      </Pressable>
+      ) : (
+        <Pressable onPress={() => resend.mutate()} disabled={resend.isPending}>
+          <AppText variant="footnote" className="text-center text-navy">
+            {t('auth.resend')}
+          </AppText>
+        </Pressable>
+      )}
     </Screen>
   );
 }

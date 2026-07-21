@@ -6,12 +6,17 @@ on:
   pull_request:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  check:
+  verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # prisma generate only needs the variable to exist; it never connects in CI.
+      DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci"
+      JWT_SECRET: "ci-only"
     steps:
       - uses: actions/checkout@v4
 
@@ -25,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Generate Prisma client
+      - name: Prisma generate
         run: pnpm --filter @cleansource/api prisma:generate
 
       - name: Build
@@ -37,5 +42,5 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-      - name: Test
+      - name: Unit tests
         run: pnpm --filter @cleansource/api test

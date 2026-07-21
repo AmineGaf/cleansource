@@ -3,7 +3,7 @@ import { createHash, randomInt } from 'node:crypto';
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
-import type { AuthResponse, TokenPair } from '@cleansource/contracts';
+import type { AuthResponse, AuthUser, TokenPair } from '@cleansource/contracts';
 
 import type { JwtPayload } from '../../common/current-user.decorator';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -79,6 +79,19 @@ export class AuthService {
     };
   }
 
+  /** Restores the session on app launch. */
+  async me(userId: string): Promise<AuthUser> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException('Account no longer exists');
+    return {
+      id: user.id,
+      phone: user.phone,
+      fullName: user.fullName,
+      email: user.email,
+      language: user.language,
+    };
+  }
+
   /**
    * Exchanges a valid refresh token for a fresh access/refresh pair.
    * Refresh tokens carry `typ: 'refresh'` so they can never be used as
@@ -98,7 +111,7 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
     });
-    if (!user) throw new UnauthorizedException('Unknown user');
+    if (!user) throw new UnauthorizedException('Account no longer exists');
 
     return this.issueTokens(user.id, user.phone);
   }

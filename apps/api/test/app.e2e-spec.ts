@@ -20,7 +20,7 @@ describe('CleanSource API (e2e)', () => {
     const response = await request(app.getHttpServer())
       .get('/health')
       .expect(200);
-    expect(response.body.status).toBe('ok');
+    expect((response.body as { status: string }).status).toBe('ok');
   });
 
   it('rejects unauthenticated access to protected routes', async () => {
