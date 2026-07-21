@@ -5,12 +5,15 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { AppText, Button, Input, Screen } from '@/components/ui';
+import { useRequestOtp } from '@/features/auth/api';
+import { ApiError } from '@/lib/api';
 
 export default function LoginScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [phone, setPhone] = useState('');
   const [error, setError] = useState<string>();
+  const requestOtp = useRequestOtp();
 
   const handleSubmit = () => {
     const result = saudiPhoneSchema.safeParse(phone);
@@ -19,8 +22,12 @@ export default function LoginScreen() {
       return;
     }
     setError(undefined);
-    // TODO: request OTP via the API, then:
-    router.push({ pathname: '/(auth)/otp', params: { phone: result.data } });
+    requestOtp.mutate(result.data, {
+      onSuccess: () =>
+        router.push({ pathname: '/(auth)/otp', params: { phone: result.data } }),
+      onError: (err) =>
+        setError(err instanceof ApiError ? err.message : t('errors.network')),
+    });
   };
 
   return (
@@ -41,7 +48,11 @@ export default function LoginScreen() {
         autoFocus
       />
 
-      <Button label={t('auth.sendCode')} onPress={handleSubmit} />
+      <Button
+        label={t('auth.sendCode')}
+        onPress={handleSubmit}
+        loading={requestOtp.isPending}
+      />
     </Screen>
   );
 }
