@@ -1,32 +1,41 @@
-# dependencies
-node_modules/
-.pnpm-store/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# builds
-dist/
-build/
-.expo/
-.turbo/
-*.tsbuildinfo
-expo-env.d.ts
+# Dependencies
+node_modules
+.pnp
+.pnp.js
 
-# native (managed by Expo prebuild — commit only if we eject)
-apps/mobile/ios/
-apps/mobile/android/
-
-# env & secrets
+# Local env files
 .env
-.env.*
-!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# databases
-*.sqlite
-postgres-data/
+# Testing
+coverage
 
-# logs & misc
-*.log
+# Turbo
+.turbo
+
+# Vercel
+.vercel
+
+# Build Outputs
+.next/
+out/
+build
+dist
+
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Misc
 .DS_Store
-coverage/
+*.pem
 
-# local agent settings
-.claude/
+
+.idea

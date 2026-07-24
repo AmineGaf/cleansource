@@ -1,9 +1,4 @@
 packages:
   - "apps/*"
   - "packages/*"
-
-onlyBuiltDependencies:
-  - "@prisma/client"
-  - "@prisma/engines"
-  - prisma
-  - unrs-resolver
+nodeLinker: hoisted

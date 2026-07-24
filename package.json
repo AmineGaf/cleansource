@@ -1,25 +1,30 @@
 {
-  "name": "cleansource",
+  "name": "cleansouce-v2",
   "private": true,
-  "packageManager": "pnpm@10.33.0",
-  "engines": {
-    "node": ">=20"
-  },
   "scripts": {
-    "postinstall": "pnpm --filter \"./packages/*\" run build",
-    "dev": "turbo run dev",
-    "dev:mobile": "pnpm --filter @cleansource/mobile start",
-    "dev:api": "pnpm --filter @cleansource/api start:dev",
     "build": "turbo run build",
+    "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "db:migrate": "pnpm --filter @cleansource/api prisma:migrate",
-    "db:studio": "pnpm --filter @cleansource/api prisma:studio"
+    "lint:fix": "turbo run lint:fix",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo run check-types",
+    "db:generate": "pnpm --filter @repo/db db:generate",
+    "db:migrate": "pnpm --filter @repo/db db:migrate",
+    "db:studio": "pnpm --filter @repo/db db:studio"
   },
   "devDependencies": {
-    "prettier": "^3.4.2",
-    "turbo": "^2.5.0"
+    "oxlint": "^1.75.0",
+    "prettier": "^3.7.4",
+    "turbo": "^2.10.5",
+    "typescript": "5.9.2"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "pnpm": {
+    "overrides": {
+      "@esbuild-kit/core-utils>esbuild": "^0.25.0"
+    }
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
